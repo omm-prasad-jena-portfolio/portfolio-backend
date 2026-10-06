@@ -70,41 +70,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+import dj_database_url
+
 # Database Configuration
-# Supports PostgreSQL via DATABASE_URL or individual DB_* env vars.
-# Falls back to SQLite for easy local development.
 DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
 
 if DATABASE_URL:
-    url = urlparse(DATABASE_URL)
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": url.path[1:],
-            "USER": url.username or "",
-            "PASSWORD": url.password or "",
-            "HOST": url.hostname or "localhost",
-            "PORT": str(url.port or 5432),
-        }
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+        )
     }
-elif os.environ.get("DB_NAME"):
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("DB_NAME"),
-            "USER": os.environ.get("DB_USER", "postgres"),
-            "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-            "HOST": os.environ.get("DB_HOST", "localhost"),
-            "PORT": os.environ.get("DB_PORT", "5432"),
-        }
-    }
+
 else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+    raise ValueError("DATABASE_URL environment variable is required and must point to a valid PostgreSQL database.")
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -143,7 +124,11 @@ else:
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
     ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 # CSRF Trusted Origins Configuration
 raw_csrf_origins = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
@@ -153,7 +138,19 @@ elif DEBUG:
     CSRF_TRUSTED_ORIGINS = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
     ]
+
+
+# Session & Security Settings
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_AGE = 86400 * 7  # 7 days
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
+
 
 # DRF Configuration
 REST_FRAMEWORK = {
