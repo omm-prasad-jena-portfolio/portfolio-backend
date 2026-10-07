@@ -118,29 +118,29 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CORS Configuration
 raw_cors_origins = os.environ.get("CORS_ALLOWED_ORIGINS", "")
-if raw_cors_origins:
-    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in raw_cors_origins.split(",") if origin.strip()]
-else:
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5174",
-    ]
-
+parsed_cors = [origin.strip() for origin in raw_cors_origins.split(",") if origin.strip()] if raw_cors_origins else []
+default_cors = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+    "https://ommstuff.netlify.app",
+]
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys(parsed_cors + default_cors))
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF Trusted Origins Configuration
 raw_csrf_origins = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
-if raw_csrf_origins:
-    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in raw_csrf_origins.split(",") if origin.strip()]
-elif DEBUG:
-    CSRF_TRUSTED_ORIGINS = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5174",
-    ]
+parsed_csrf = [origin.strip() for origin in raw_csrf_origins.split(",") if origin.strip()] if raw_csrf_origins else []
+default_csrf = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+    "https://ommstuff.netlify.app",
+]
+CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(parsed_csrf + default_csrf))
+
 
 
 # Session & Security Settings
