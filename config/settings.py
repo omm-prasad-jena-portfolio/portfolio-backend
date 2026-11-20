@@ -129,8 +129,14 @@ default_cors = [
     "http://localhost:5174",
     "http://127.0.0.1:5174",
     "https://ommstuff.netlify.app",
+    "https://ommprasadjena.vercel.app",
+    "https://portfolio-personal-mu-ruddy.vercel.app",
 ]
 CORS_ALLOWED_ORIGINS = list(dict.fromkeys(parsed_cors + default_cors))
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https:\/\/.*\.vercel\.app$",
+    r"^https:\/\/.*\.netlify\.app$",
+]
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF Trusted Origins Configuration
@@ -142,6 +148,10 @@ default_csrf = [
     "http://localhost:5174",
     "http://127.0.0.1:5174",
     "https://ommstuff.netlify.app",
+    "https://ommprasadjena.vercel.app",
+    "https://portfolio-personal-mu-ruddy.vercel.app",
+    "https://*.vercel.app",
+    "https://*.netlify.app",
 ]
 CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(parsed_csrf + default_csrf))
 
