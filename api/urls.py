@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import health_check, contact_view, chat_view
+from .views import health_check, setup_db_view, contact_view, chat_view
 from .private_views import (
     private_unlock_view, private_session_view, private_logout_view, get_csrf_token_view,
     dashboard_view,
@@ -17,6 +17,7 @@ from .private_views import (
 
 urlpatterns = [
     path('health/', health_check, name='health_check'),
+    path('setup-db/', setup_db_view, name='setup_db'),
     path('contact/', contact_view, name='contact'),
     path('chat/', chat_view, name='chat'),
     path('auth/csrf/', get_csrf_token_view, name='csrf_token'),

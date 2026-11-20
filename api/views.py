@@ -45,9 +45,41 @@ Conversation rules:
 @permission_classes([AllowAny])
 def health_check(request):
     """
-    Health check endpoint for deployment testing.
+    Health check endpoint for deployment testing. Also ensures database tables exist.
     """
-    return Response({'status': 'ok'}, status=status.HTTP_200_OK)
+    migrated = False
+    try:
+        from django.contrib.auth.models import User
+        if not User.objects.exists():
+            from django.core.management import call_command
+            call_command("migrate", interactive=False)
+            migrated = True
+    except Exception:
+        try:
+            from django.core.management import call_command
+            call_command("migrate", interactive=False)
+            migrated = True
+        except Exception as inner_e:
+            return Response({'status': 'migration_failed', 'error': str(inner_e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return Response({'status': 'ok', 'migrated': migrated}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
+def setup_db_view(request):
+    """
+    Runs migrations and seeds initial study planner data if missing.
+    """
+    try:
+        from django.core.management import call_command
+        call_command("migrate", interactive=False)
+        from api.models import Subject
+        if not Subject.objects.exists():
+            call_command("seed_study_data")
+        return Response({'success': True, 'message': 'Database migrated and seeded successfully.'}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])

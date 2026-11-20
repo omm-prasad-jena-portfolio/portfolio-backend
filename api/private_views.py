@@ -125,10 +125,18 @@ def private_unlock_view(request):
     if check_password(pin_str, hashed_pin):
         clear_failed_attempts(ip)
 
-        user, _ = User.objects.get_or_create(
-            username='omm_owner',
-            defaults={'email': 'omm@example.com', 'first_name': 'Omm', 'last_name': 'Prasad Jena'}
-        )
+        try:
+            user, _ = User.objects.get_or_create(
+                username='omm_owner',
+                defaults={'email': 'omm@example.com', 'first_name': 'Omm', 'last_name': 'Prasad Jena'}
+            )
+        except Exception:
+            from django.core.management import call_command
+            call_command("migrate", interactive=False)
+            user, _ = User.objects.get_or_create(
+                username='omm_owner',
+                defaults={'email': 'omm@example.com', 'first_name': 'Omm', 'last_name': 'Prasad Jena'}
+            )
         login(request, user)
         request.session['private_authenticated'] = True
         request.session.modified = True
