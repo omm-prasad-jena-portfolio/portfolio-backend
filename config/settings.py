@@ -23,7 +23,13 @@ raw_allowed_hosts = os.environ.get("ALLOWED_HOSTS", "")
 if raw_allowed_hosts:
     ALLOWED_HOSTS = [host.strip() for host in raw_allowed_hosts.split(",") if host.strip()]
 else:
-    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "*"] if DEBUG else []
+    ALLOWED_HOSTS = [
+        "localhost",
+        "127.0.0.1",
+        ".onrender.com",
+        "portfolio-backend-yrzq.onrender.com",
+        "*",
+    ]
 
 # Application definition
 INSTALLED_APPS = [
@@ -150,8 +156,10 @@ default_csrf = [
     "https://ommstuff.netlify.app",
     "https://ommprasadjena.vercel.app",
     "https://portfolio-personal-mu-ruddy.vercel.app",
+    "https://portfolio-backend-yrzq.onrender.com",
     "https://*.vercel.app",
     "https://*.netlify.app",
+    "https://*.onrender.com",
 ]
 CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(parsed_csrf + default_csrf))
 
