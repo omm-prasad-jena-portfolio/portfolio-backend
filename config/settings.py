@@ -82,9 +82,13 @@ if DATABASE_URL:
             conn_max_age=600,
         )
     }
-
 else:
-    raise ValueError("DATABASE_URL environment variable is required and must point to a valid PostgreSQL database.")
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
